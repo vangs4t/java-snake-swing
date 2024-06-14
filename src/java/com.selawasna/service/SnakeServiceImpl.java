@@ -14,13 +14,12 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
     ArrayList<ArrayList<ChacheData>> square;
     Cordinate headSnakePos;
     public int sizeSnake = 3;
-    public String timerResult = "";
+    public static StringBuilder str = new StringBuilder();
     public static Timer timer = new Timer(1000, new ActionListener() {
         int counter = 0;
         @Override
         public void actionPerformed(ActionEvent e) {
             counter++;
-
         }
     });
 

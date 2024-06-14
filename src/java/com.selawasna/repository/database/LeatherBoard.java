@@ -17,7 +17,7 @@ public class LeatherBoard {
                     """;
             try (PreparedStatement statement = connection.prepareStatement(update,Statement.RETURN_GENERATED_KEYS)) {
                 statement.setInt(1, new SnakeServiceImpl().sizeSnake);
-                statement.setString(2, );
+//                statement.setString(2, );
             }
         } catch (SQLException e){
             System.out.println(e);
