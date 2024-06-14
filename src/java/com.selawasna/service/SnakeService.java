@@ -3,7 +3,9 @@ package com.selawasna.service;
 
 import com.selawasna.entity.Cordinate;
 
+
 public interface SnakeService {
+
     void pauser();
 
     void checkTabrakan();
@@ -19,7 +21,5 @@ public interface SnakeService {
     void deleteTail();
 
     Cordinate getArea();
-
-    void mainMenus();
 
 }

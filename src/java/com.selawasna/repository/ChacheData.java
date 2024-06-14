@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ChacheData {
 
-    ArrayList<Color> C = new ArrayList<Color>();
+    ArrayList<Color> C = new ArrayList<>();
     // Data 0 == Kosong, 1 == Makanan, == 2 Ular
     int color;
 

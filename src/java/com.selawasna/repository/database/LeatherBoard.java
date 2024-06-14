@@ -13,11 +13,11 @@ public class LeatherBoard {
     public void result(){
         try (Connection connection = ConnectorUtil.getDataSource().getConnection()){
             String update = """
-                    INSERT INTO peringkat (score, playtime) values (?,?)
+                    INSERT INTO peringkat (score) values (?);
                     """;
             try (PreparedStatement statement = connection.prepareStatement(update,Statement.RETURN_GENERATED_KEYS)) {
-                statement.setInt(1, new SnakeServiceImpl().sizeSnake);
-                statement.setString(2, );
+                statement.setInt(1, new SnakeServiceImpl().getFinalSize());
+                statement.executeUpdate();
             }
         } catch (SQLException e){
             System.out.println(e);

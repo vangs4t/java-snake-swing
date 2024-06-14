@@ -1,32 +1,22 @@
 package com.selawasna.service;
 
 import com.selawasna.entity.Cordinate;
-import com.selawasna.gui.Buttons;
+import com.selawasna.entity.Ulars;
 import com.selawasna.repository.ChacheData;
 import com.selawasna.repository.Windows;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SnakeServiceImpl extends Thread implements SnakeService{
     ArrayList<ArrayList<ChacheData>> square;
     Cordinate headSnakePos;
-    public int sizeSnake = 3;
-    public String timerResult = "";
-    public static Timer timer = new Timer(1000, new ActionListener() {
-        int counter = 0;
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            counter++;
-
-        }
-    });
+    public static Ulars snikes = new Ulars(70,3);
+    private int finalSize;
 
     public static int directionSnake ;
 
-    ArrayList<Cordinate> positions = new ArrayList<Cordinate>();
+    ArrayList<Cordinate> positions = new ArrayList<>();
     Cordinate foodPosition;
 
     public SnakeServiceImpl() {
@@ -49,7 +39,6 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
 
     public void run(){
         while (true){
-            timer.start();
             moveInternel(directionSnake);
             checkTabrakan();
             moveExternel();
@@ -64,7 +53,7 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
     @Override
     public void pauser() {
         try {
-            sleep(new Buttons().getSpeeds());
+            sleep(snikes.getSpeed());
         } catch (InterruptedException e){
             e.printStackTrace();
         }
@@ -77,17 +66,16 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
     public void checkTabrakan() {
         Cordinate posCritique = positions.get(positions.size()-1);
         for(int i = 0;i<=positions.size()-2;i++){
-            boolean biteItself = posCritique.getX() == positions.get(i).getX() && posCritique.getY() == positions.get(i).getY();
+            boolean biteItself = Objects.equals(posCritique.getX(), positions.get(i).getX()) && Objects.equals(posCritique.getY(), positions.get(i).getY());
             if(biteItself){
-
                 stopGame();
             }
         }
 
-        boolean eatingFood = posCritique.getX() == foodPosition.getY() && posCritique.getY() == foodPosition.getX();
+        boolean eatingFood = Objects.equals(posCritique.getX(), foodPosition.getY()) && Objects.equals(posCritique.getY(), foodPosition.getX());
         if(eatingFood){
             System.out.println("Yummy!");
-            sizeSnake = sizeSnake + 1;
+            snikes.setSize(snikes.getSize() + 1);
             foodPosition = getArea();
             spawnFood(foodPosition);
         }
@@ -95,11 +83,14 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
 
     @Override
     public void stopGame() {
-        System.out.println("COLISION! \n");
+        finalSize = snikes.getSize();
+        System.out.println("COLISION! \n ");
         while(true){
-            timer.stop();
             pauser();
         }
+    }
+    public int getFinalSize(){
+        return finalSize;
     }
 
     @Override
@@ -109,35 +100,31 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
 
     @Override
     public void moveInternel(int dir) {
-        switch(dir){
-            case 4:
-
-                headSnakePos.changeData(headSnakePos.getX(),(headSnakePos.getY()+1)%20);
-                positions.add(new Cordinate(headSnakePos.getX(),headSnakePos.getY()));
-                break;
-            case 3:
-                if(headSnakePos.getY()-1<0){
-                    headSnakePos.changeData(headSnakePos.getX(),19);
+        switch (dir) {
+            case 4 -> {
+                headSnakePos.changeData(headSnakePos.getX(), (headSnakePos.getY() + 1) % 20);
+                positions.add(new Cordinate(headSnakePos.getX(), headSnakePos.getY()));
+            }
+            case 3 -> {
+                if (headSnakePos.getY() - 1 < 0) {
+                    headSnakePos.changeData(headSnakePos.getX(), 19);
+                } else {
+                    headSnakePos.changeData(headSnakePos.getX(), Math.abs(headSnakePos.getY() - 1) % 20);
                 }
-                else{
-                    headSnakePos.changeData(headSnakePos.getX(),Math.abs(headSnakePos.getY()-1)%20);
+                positions.add(new Cordinate(headSnakePos.getX(), headSnakePos.getY()));
+            }
+            case 2 -> {
+                if (headSnakePos.getX() - 1 < 0) {
+                    headSnakePos.changeData(19, headSnakePos.getY());
+                } else {
+                    headSnakePos.changeData(Math.abs(headSnakePos.getX() - 1) % 20, headSnakePos.getY());
                 }
-                positions.add(new Cordinate(headSnakePos.getX(),headSnakePos.getY()));
-                break;
-            case 2:
-                if(headSnakePos.getX()-1<0){
-                    headSnakePos.changeData(19,headSnakePos.getY());
-                }
-                else{
-                    headSnakePos.changeData(Math.abs(headSnakePos.getX()-1)%20,headSnakePos.getY());
-                }
-                positions.add(new Cordinate(headSnakePos.getX(),headSnakePos.getY()));
-
-                break;
-            case 1:
-                headSnakePos.changeData(Math.abs(headSnakePos.getX()+1)%20,headSnakePos.getY());
-                positions.add(new Cordinate(headSnakePos.getX(),headSnakePos.getY()));
-                break;
+                positions.add(new Cordinate(headSnakePos.getX(), headSnakePos.getY()));
+            }
+            case 1 -> {
+                headSnakePos.changeData(Math.abs(headSnakePos.getX() + 1) % 20, headSnakePos.getY());
+                positions.add(new Cordinate(headSnakePos.getX(), headSnakePos.getY()));
+            }
         }
     }
 
@@ -153,7 +140,7 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
 
     @Override
     public void deleteTail() {
-        int cmpt = sizeSnake;
+        int cmpt = snikes.getSize();
         for(int i = positions.size()-1;i>=0;i--){
             if(cmpt==0){
                 Cordinate t = positions.get(i);
@@ -163,7 +150,7 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
                 cmpt--;
             }
         }
-        cmpt = sizeSnake;
+        cmpt = snikes.getSize();
         for(int i = positions.size()-1;i>=0;i--){
             if(cmpt==0){
                 positions.remove(i);
@@ -177,13 +164,13 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
     @Override
     public Cordinate getArea() {
         Cordinate p ;
-        int ranX= 0 + (int)(Math.random()*19);
-        int ranY= 0 + (int)(Math.random()*19);
+        int ranX= (int) (Math.random() * 19);
+        int ranY= (int) (Math.random() * 19);
         p=new Cordinate(ranX,ranY);
         for(int i = 0 ; i <= positions.size() - 1 ; i++){
-            if(p.getY()==positions.get(i).getX() && p.getX()==positions.get(i).getY()){
-                ranX= 0 + (int)(Math.random()*19);
-                ranY= 0 + (int)(Math.random()*19);
+            if(Objects.equals(p.getY(), positions.get(i).getX()) && Objects.equals(p.getX(), positions.get(i).getY())){
+                ranX= (int) (Math.random() * 19);
+                ranY= (int) (Math.random() * 19);
                 p=new Cordinate(ranX,ranY);
                 i=0;
             }
@@ -191,8 +178,4 @@ public class SnakeServiceImpl extends Thread implements SnakeService{
         return p;
     }
 
-    @Override
-    public void mainMenus() {
-
-    }
 }
